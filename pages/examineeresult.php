@@ -73,7 +73,7 @@ $selExam = $conn->query("SELECT * FROM exam_tbl WHERE ex_id='$examId'")->fetch(P
             </div>
         </div>
 
-        <div class="col-md-12">
+        <!-- <div class="col-md-12">
             <div class="main-card mb-3 card">
                 <div class="card-header">Ratings on the Career Advice Consultation Exam</div>
                 <div class="table-responsive">
@@ -87,102 +87,65 @@ $selExam = $conn->query("SELECT * FROM exam_tbl WHERE ex_id='$examId'")->fetch(P
                             </tr>
                         </thead>
                         <tbody>
+                        
+
                         <?php
-// Assuming you have established a database connection and have $conn available
+$selScore = $conn->query("SELECT *, eqt.category AS category FROM exam_question_tbl eqt INNER JOIN exam_answers ea ON eqt.eqt_id = ea.quest_id AND eqt.exam_answer = ea.exans_answer  WHERE ea.axmne_id='$exmneId' AND ea.exam_id='$examId' AND ea.exans_status='new'");
 
-$selScore = $conn->query("SELECT * FROM exam_question_tbl eqt INNER JOIN exam_answers ea ON eqt.eqt_id = ea.quest_id AND eqt.exam_answer = ea.exans_answer  WHERE ea.axmne_id='$exmneId' AND ea.exam_id='$examId' AND ea.exans_status='new'");
-$score = $selScore->rowCount();
-$over = $selExam['ex_questlimit_display'];
-$formattedAns = number_format(($score / $over * 100), 2);
+// Initialize an array to hold scores for each category
+$categoryScores = array();
 
-$subject = ""; // Subject initialization
-$courseRecommendation = "Please Contact"; // Default course recommendation
-
-if ($formattedAns >= 1.00 && $formattedAns <= 20.00) {
-    $subject = "Logic";
-    $courseRecommendation = "Bachelor of Science in Computer Science (BSCS), Bachelor of Science in Information Technology (BSIT)";
-} elseif ($formattedAns > 20.00 && $formattedAns <= 40.00) {
-    $subject = "Analytical";
-    $courseRecommendation = "Bachelor of Science in Architecture (BSA), Bachelor of Science in Engineering (BSE)";
-} elseif ($formattedAns > 40.00 && $formattedAns <= 60.00) {
-    $subject = "Grammar and Vocabulary";
-    $courseRecommendation = "Bachelor of Elementary Education (BEE), Bachelor of Secondary Education (BSE)";
-} elseif ($formattedAns > 60.00 && $formattedAns <= 80.00) {
-    $subject = "Science";
-    $courseRecommendation = "Bachelor of Science in Nursing (BSN), Bachelor of Science in Pharmacy (BSP)";
-} elseif ($formattedAns > 80.00 && $formattedAns <= 100.00) {
-    $subject = "Abstract Thinking";
-    $courseRecommendation = "Bachelor of Science in Tourism Management (BSTM), Bachelor of Science in Hospitality Management (BSHM)";
+// Loop through each row in the result set
+while($row = $selScore->fetch(PDO::FETCH_ASSOC)) {
+    // Get the category from the current row
+    $category = $row['category'];
+    
+    // Check if the category exists in the $categoryScores array
+    if(!isset($categoryScores[$category])) {
+        // If not, initialize the score for that category to zero
+        $categoryScores[$category] = 0;
+    }
+    
+    // Increment the score for the current category
+    $categoryScores[$category]++;
 }
 
-// Simulating predefined scores based on dynamic score percentage
-$logicScore = ceil($score * 0.15); // 20% of total score
-$numericalScore = ceil($score * 0.15); // 20% of total score
-$grammarScore = ceil($score * 0.2); // 20% of total score
-$clinicalScore = ceil($score * 0.2); // 20% of total score
-$communicationScore = ceil($score * 0.15); // 20% of total score
+$totalPercentage = 0; // Initialize total percentage
+$totalQuestionsCount = 0; // Initialize total question count
 
-$totalScore = $logicScore + $numericalScore + $grammarScore + $clinicalScore + $communicationScore;
+// Now you have the count of correct answers for each category
+// You can proceed to further computations or output as needed
+foreach($categoryScores as $category => $score) {
+    // Get the total number of questions for the current category
+    $totalQuestionsQuery = $conn->query("SELECT COUNT(*) AS total FROM exam_question_tbl WHERE category='$category'");
+    $totalQuestions = $totalQuestionsQuery->fetch(PDO::FETCH_ASSOC)['total'];
+    
+    // Increment total question count
+    $totalQuestionsCount += $totalQuestions;
+    
+    // Compute the percentage score for the current category
+    $percentage = number_format(($score / $totalQuestions * 100), 2); // Compute percentage
 
-// Define the total number of items for each subject (assuming each subject has equal weight)
-$totalItems = 5;
-$itemsPerSubject = ceil($over / $totalItems);
+    // Add the percentage to the total
+    $totalPercentage += $percentage;
+    
+    echo "Category: $category, Percentage Score: $percentage%\n";
+}
 
-// Calculate the average score
-$averageScore = $totalScore / $totalItems;
+// Multiply total percentage by total question count
+$totalScore = ($totalPercentage / 100) * $totalQuestionsCount;
 
-// Determine subject and course recommendation based on average score
-if ($averageScore <= 20) {
-    $subject = "Logic";
-    $courseRecommendation = "Bachelor of Science in Computer Science (BSCS), Bachelor of Science in Information Technology (BSIT)";
-} elseif ($averageScore <= 40) {
-    $subject = "Analytical";
-    $courseRecommendation = "Bachelor of Science in Architecture (BSA), Bachelor of Science in Engineering (BSE)";
-} elseif ($averageScore <= 60) {
-    $subject = "Grammar and Vocabulary";
-    $courseRecommendation = "Bachelor of Elementary Education (BEE), Bachelor of Secondary Education (BSE)";
-} elseif ($averageScore <= 80) {
-    $subject = "Science";
-    $courseRecommendation = "Bachelor of Science in Nursing (BSN), Bachelor of Science in Pharmacy (BSP)";
-} 
- elseif ($averageScore <=100){
-    $subject = "Abstract Thinking";
-    $courseRecommendation = "Bachelor of Science in Tourism Management (BSTM), Bachelor of Science in Hospitality Management (BSHM)";
-
- }
-else {
-    $subject = "";
-    $courseRecommendation = "N/a";
+// Check if the total score exceeds a certain threshold
+if($totalScore >= 70) {
+    echo "Congratulations! You passed the exam. $totalPercentage";
+} else {
+    echo "Sorry, you did not pass the exam. Your total score is $totalScore out of $totalQuestionsCount.";
 }
 ?>
 
-<!-- Displaying the results -->
 
 
-<th><?php echo "Total Score: " . $totalScore; ?></th>
-<th><?php echo "Average Score: " . number_format($averageScore, 2) . "%"; ?></th>
-<th><?php echo "Predefined Subject: " . $subject; ?></th>
-<th><?php echo "Predefined Course Recommendation: " . $courseRecommendation; ?></th>  
 
-<!-- Integration of provided code snippet to display subjects and scores -->
-<?php
-// Associative array to store subjects and their scores
-$subjectScores = array(
-    "Logic" => $logicScore,
-    "Analytical" => $numericalScore,
-    "Grammar and Vocabulary" => $grammarScore,
-    "Science" => $clinicalScore,
-    "Abstract Thinking" => $communicationScore
-);
-
-// Sort the array based on scores in descending order
-arsort($subjectScores);
-
-// Display subjects and their scores from highest to lowest
-foreach ($subjectScores as $subject => $score) {
-    echo "<th>$subject: " . number_format(($score / $itemsPerSubject) * 100, 2) . "%</th>";
-}
-?>
 
 
 
@@ -190,7 +153,78 @@ foreach ($subjectScores as $subject => $score) {
                     </table>
                 </div>
             </div>
+        </div> -->
+        <div class="col-md-12">
+            <div class="main-card mb-3 card">
+                <div class="card-header">Results per Category</div>
+                <div class="table-responsive">
+                    <table class="align-middle mb-0 table table-borderless table-striped table-hover" id="categoryResultsTable">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Percentage Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+$totalPercentage = 0; // Initialize total percentage
+$totalItemsCount = 0; // Initialize total item count
+
+// Loop through each category
+foreach($categoryScores as $category => $score) {
+    // Get the total number of questions for the current category
+    $totalQuestionsQuery = $conn->query("SELECT COUNT(*) AS total FROM exam_question_tbl WHERE category='$category'");
+    $totalQuestions = $totalQuestionsQuery->fetch(PDO::FETCH_ASSOC)['total'];
+    
+    // Increment total item count
+    $totalItemsCount += $totalQuestions;
+    
+    // Compute the percentage score for the current category
+    $percentage = number_format(($score / $totalQuestions * 100), 2); // Compute percentage
+
+    // Add the percentage to the total
+    $totalPercentage += $percentage * $totalQuestions; // Multiply percentage by total questions
+    
+    // Output the category and percentage
+    ?>
+    <tr>
+        <th><?php echo $category; ?></th>
+        <th><?php echo $percentage . '%'; ?></th>
+    </tr>
+    <?php
+}
+
+// Compute overall percentage
+$overallPercentage = number_format(($totalPercentage / $totalItemsCount), 2);
+
+
+?>
+
+
+<!-- Display overall percentage -->
+<tr>
+    <th>Total</th>
+    <th><?php echo $overallPercentage . '%'; ?></th>
+</tr> 
+<tr>
+<th>Course Recommendation</th>
+    <th colspan="2">
+      <?php 
+    
+    if($overallPercentage >= 56.25) {
+      echo "Congratulations! You passed the exam with an overall score of $overallPercentage%.";
+    } else {
+      echo "Sorry, you did not pass the exam. Your overall score is $overallPercentage%.";
+    }
+    ?>
+    </th>
+</tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+        <!-- End of Table for Category Results -->
         <div class="chatbot-icon">
             
             <!-- <div class="text-message">The chatbot provides advice after reviewing the results and recommendations.</div> -->

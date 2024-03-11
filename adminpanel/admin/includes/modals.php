@@ -234,8 +234,24 @@
             <input type="" name="question" id="course_name" class="form-control" placeholder="Input question" autocomplete="off">
           </div>
 
+          <div class="form-group">
+    <label for="category">Categories</label>
+    <input type="hidden" name="examId" value="<?php echo $exId; ?>">
+    <select name="category" id="category" class="form-control" autocomplete="off">
+        <option value="Logic">Logic</option>
+        <option value="Analytical">Analytical</option>
+        <option value="Grammar and Vocabulary">Grammar and Vocabulary</option>
+        <option value="Science">Science</option>
+        <option value="Abstract Thinking">Abstract Thinking</option>
+
+        <!-- Add more options as needed -->
+    </select>
+</div>
+
+
+
           <fieldset>
-            <legend>Input word for choice's</legend>
+            <legend>Input word for option's</legend>
             <div class="form-group">
                 <label>Option A</label>
                 <input type="" name="choice_A" id="choice_A" class="form-control" placeholder="Input option A" autocomplete="off">
