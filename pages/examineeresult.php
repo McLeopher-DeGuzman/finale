@@ -117,7 +117,8 @@ $totalQuestionsCount = 0; // Initialize total question count
 // You can proceed to further computations or output as needed
 foreach($categoryScores as $category => $score) {
     // Get the total number of questions for the current category
-    $totalQuestionsQuery = $conn->query("SELECT COUNT(*) AS total FROM exam_question_tbl WHERE category='$category'");
+    $totalQuestionsQuery = $conn->query("SELECT COUNT(*) AS total FROM exam_question_tbl WHERE category='$category' AND exam_id='$examId'");
+
     $totalQuestions = $totalQuestionsQuery->fetch(PDO::FETCH_ASSOC)['total'];
     
     // Increment total question count
@@ -142,7 +143,7 @@ if($totalScore >= 70) {
     echo "Sorry, you did not pass the exam. Your total score is $totalScore out of $totalQuestionsCount.";
 }
 ?>
-
+ 
 
 
 
@@ -173,7 +174,8 @@ $totalItemsCount = 0; // Initialize total item count
 // Loop through each category
 foreach($categoryScores as $category => $score) {
     // Get the total number of questions for the current category
-    $totalQuestionsQuery = $conn->query("SELECT COUNT(*) AS total FROM exam_question_tbl WHERE category='$category'");
+    $totalQuestionsQuery = $conn->query("SELECT COUNT(*) AS total FROM exam_question_tbl WHERE category='$category' AND exam_id='$examId'");
+
     $totalQuestions = $totalQuestionsQuery->fetch(PDO::FETCH_ASSOC)['total'];
     
     // Increment total item count
@@ -209,14 +211,34 @@ $overallPercentage = number_format(($totalPercentage / $totalItemsCount), 2);
 <tr>
 <th>Course Recommendation</th>
     <th colspan="2">
-      <?php 
-    
-    if($overallPercentage >= 56.25) {
-      echo "Congratulations! You passed the exam with an overall score of $overallPercentage%.";
-    } else {
-      echo "Sorry, you did not pass the exam. Your overall score is $overallPercentage%.";
-    }
-    ?>
+    <?php 
+if ($overallPercentage >= 50.00 && $overallPercentage <= 60.00 ) {
+    echo "1st Choice: Bachelor of Science in Architecture (BSA), ".
+    "2nd Choice: Bachelor of Science in Engineering (BSE)";
+} 
+elseif ($overallPercentage >= 70.00 && $overallPercentage <= 75.00) {
+    echo "1st Choice: Bachelor of Science in Nursing (BSN), ".
+    "2nd Choice: Bachelor of Science in Pharmacy (BSP)";
+}
+elseif ($overallPercentage >= 40.00 && $overallPercentage <= 50.00) {
+    echo "1st Choice: Bachelor of Science in Computer Science (BSCS), ".
+    "2nd Choice: Bachelor of Science in Information Technology (BSIT)";
+}
+elseif ($overallPercentage >= 60.00 && $overallPercentage <= 70.00) {
+  echo "1st Choice: Bachelor of Elementary Education (BEE) , ".
+  "2nd Choice: Bachelor of Secondary Education (BSE)";
+}
+elseif ($overallPercentage >= 75.00 && $overallPercentage <= 80.00) {
+  echo "1st Choice: Bachelor of Science in Tourism Management (BSTM) , ".
+  "2nd Choice: Bachelor of Science in Hospitality Management (BSHM)";
+}
+
+
+else {
+    echo "Sorry, you did not pass the exam. Please Contact ";
+}
+?>
+
     </th>
 </tr>
                         </tbody>

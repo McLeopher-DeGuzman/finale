@@ -31,7 +31,13 @@
                                         <tr>
                                            <td><?php echo $selExmneRow['exmne_fullname']; ?></td>
                                            
-
+                                            <td>
+                                            <a href="?pages=item_analysis&exam_id=<?php echo $selExamRow['ex_id']; ?>" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-eye">View</i> <!-- Replace 'fas fa-eye' with the actual class for your desired icon -->
+                                            </a>
+                                            </td>
+                                                                           
+                                            
                                            </td>
                                         </tr>
                                     <?php }
