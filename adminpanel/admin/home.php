@@ -65,6 +65,10 @@ if(!isset($_SESSION['admin']['adminnakalogin']) == true) header("location:index.
      {
       include("pages/ranking-yearly.php");
      }
+     else if($page == "result")
+     {
+      include("pages/result.php");
+     }
 
        
    }

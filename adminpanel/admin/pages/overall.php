@@ -40,8 +40,8 @@
                                 <th style="width: 18%">Full Name</th>
                                 <th style="width: 15%">Exam Name</th>
                                 <th style="width: 10%">Scores</th>
-                                <th>Ratings</th>
-                                <th>Subject</th>
+                                <th>Over All</th>
+                                <!-- <th>Subject</th> -->
                                 <th>Course Recommendation</th>
                                 <!-- <th width="10%">DAte and time</th> -->
                             </tr>
@@ -87,27 +87,27 @@
                                                 $subject = ""; // Initialize the subject variable
                                                 $courseRecommendation = "Unknown"; // Initialize the course recommendation variable
 
-                                                if ($formattedAns >= 1.00 && $formattedAns <= 20.00) {
+                                                if ($formattedAns >= 40.00 && $formattedAns <= 60.00) {
                                                     $subject = "Logic"; // Assign the subject they excel in
                                                     $courseRecommendation = "Bachelor of Science in Computer Science (BSCS), ".
                                                     " Bachelor of Science in Information Technology (BSIT)";
                                                      // Assign the course recommendation
-                                                } elseif ($formattedAns >= 20.00 && $formattedAns <= 40.00) {
+                                                } elseif ($formattedAns >= 90.00 && $formattedAns <= 100.00) {
                                                     $subject = "Numerical"; // Assign the subject they excel in
                                                     $courseRecommendation = "Bachelor of Science in Architecture (BSA), ".
                                                     "Bachelor of Science in Engineering (BSE)" ; // Assign the course recommendation
 
-                                                } elseif ($formattedAns >= 40.00 && $formattedAns <= 60.00) {
+                                                } elseif ($formattedAns >= 60.00 && $formattedAns <= 70.00) {
                                                     $subject = "Grammar and Reading Comprehension"; // Assign the subject they excel in
                                                     $courseRecommendation = "Bachelor of Elementary Education (BEE), ".
                                                     "Bachelor of Secondary Education (BSE) " ; // Assign the course recommendation
 
-                                                } elseif ($formattedAns >= 60.00 && $formattedAns <= 80.00) {
+                                                } elseif ($formattedAns >= 70.00 && $formattedAns <= 80.00) {
                                                     $subject = "Clinical"; // Assign the subject they excel in
                                                     $courseRecommendation =  "Bachelor of Science in Nursing (BSN), ".
                                                     " Bachelor of Science in Pharmacy (BSP)" ; // Assign the course recommendation
                                                     
-                                                } elseif ($formattedAns >= 60.00 && $formattedAns <= 80.00) {
+                                                } elseif ($formattedAns >= 80.00 && $formattedAns <= 90.00) {
                                                     $subject = "Communications Skills"; // Assign the subject they excel in
                                                     $courseRecommendation =   "Bachelor of Science in Tourism Management (BSTM),".
                                                     "Bachelor of Science in Hospitality Management (BSHM)" ; // Assign the course recommendation
@@ -122,7 +122,7 @@
                                                 ?> 
                                             </span> 
                                         </td>
-                                        <td><?php echo $subject; ?></td>
+                                        <!-- <td><?php echo $subject; ?></td> -->
                                         <td><?php echo $courseRecommendation; ?></td>
                                         <!-- ... Previous code ... -->
                                     </tr>
@@ -157,16 +157,28 @@
         var formattedTime = currentDate.toLocaleTimeString();
 
         var headerContent = `
-            <div>
-                <div>
-                    <div class="title">URBIZTONDO CATHOLIC SCHOOL</div>
-                    <div class="title">Examination Results</div>
-                    <br>
-                    <div class="subtitle">Date: ${formattedDate}        Time: ${formattedTime}</div>
-                    
-                </div>
+    <div style="text-align: center;">
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="flex: 1;">
+                <img src="./login-ui/images/UCS-removebg-preview.png" alt="Left Logo" class="left-logo" style="width:100px;">
             </div>
-        `;
+            <div style="flex: 3;">
+                <div class="title">Archdiocese of Lingayen Dagupan Catholic Schools</div>
+                <div class="title">URBIZTONDO CATHOLIC SCHOOL, INC.</div>
+                <div class="title">Contact No. (075. 540-1712 / 0923-086-2353)</div>
+                <div class="title">Urbiztondo Catholic School-ALDCS @ucsaldcs</div>
+                <div class="title">SENIOR HIGH SCHOOL DEPARTMENT</div>
+                <br>
+                <div class="subtitle">Date: ${formattedDate}        Time: ${formattedTime}</div>
+            </div>
+            <div style="flex: 1;">
+                <img src="./login-ui/images/al.png" alt="Right Logo" class="right-logo" style="width:100px;">
+            </div>
+        </div>
+    </div>
+`;
+
+
 
         var footerContent = `
             <div style="margin-top: 20px;">
@@ -187,8 +199,8 @@
                     }
 
                     .title {
-                        font-size: 24px;
-                        font-weight: bold;
+                        font-size: 18px;
+                        // font-weight: bold;
                     }
 
                     .subtitle {
@@ -196,7 +208,7 @@
                     }
 
                     .logo {
-                        width: 50px; /* Adjust the width as needed */
+                        width: 30px; /* Adjust the width as needed */
                         height: auto;
                         display: block;
                         margin-bottom: 20px;
@@ -221,7 +233,7 @@
             </head>
             <body>
                 <!-- Header Content -->
-                <img src="./login-ui/images/UCS-removebg-preview.png" alt="Logo" class="logo">
+                
 
                 ${headerContent}
                 

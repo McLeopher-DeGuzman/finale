@@ -1,216 +1,123 @@
-/* Reset some default styles */
-body,
-h1,
-h2,
-p {
+@import url('https://fonts.googleapis.com/css2?family=Rubik&display=swap');
+
+body{
   margin: 0;
   padding: 0;
-}
-
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: #f2f2f2;
-}
-
-/* Header styles */
-.header {
-  text-align: center;
-  padding: 20px;
-  background-color: #7D7C7C;
-  color: #fff;
-  font-size: 24px;
-}
-
-.logo {
-  width: 100px; /* Adjust the width as needed */
-  height: auto;
-  margin-bottom: 10px;
-}
-
-.title {
-  font-size: 32px;
-}
-
-/* Chat container styles */
-.chat-container {
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-}
-
-/* Chat box styles */
-.chat-box {
-  overflow-y: auto;
-  max-height: 300px;
-  margin-bottom: 10px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-
-.chat-message {
-  white-space: pre-wrap;
-  margin-bottom: 5px;
-  padding: 10px;
-  border-radius: 12px;
-  background-color: #ddd;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
-.chat-message1 {
-    white-space: pre-wrap;
-    margin-bottom: 5px;
-    padding: 10px;
-    border-radius: 12px;
-    background-color: #ddd;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    text-align: right;
-  }
-.chat-message:after, .chat-message1:after {
-  content: "";
-  width: 10px;
-  height: 10px;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  border-radius: 50%;
-  background-color: #3498db;
-  /* Added a box-shadow to the chat message indicators */
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
-}
-
-.chat-message:after {
-  right: 0;
-}
-
-.chat-message1:after {
-  left: 0;
-}
-
-.bot-message {
-  background-color: #FF7377;
-  color: #fff;
-}
-
-.user-input {
   display: flex;
   align-items: center;
+  justify-content: center;
+  font-family: "Rubik", sans-serif;
+}
+
+#bot {
+  margin: 50px 0;
+  height: 700px;
+  width: 1000px; /* Adjusted width */
+  background: #BED1CF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 3px 3px 15px #BED1CF ;
+  border-radius: 20px;
+}
+
+
+#container {
+  height: 90%;
+  border-radius: 6px;
+  width: 90%;
+  background: #4c5974;
+}
+
+#header {
+  width: 100%;
+  height: 10%;
+  border-radius: 6px;
+  background: #FF7377;
+  color: white;
+  text-align: center;
+  font-size: 2rem;
+  padding-top: 12px;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#body {
+  width: 100%;
+  height: 75%;
+  background-color: #F3F4F6;
+  overflow-y: auto;
+}
+
+.userSection {
+  width: 100%;
+}
+
+.seperator {
+  width: 100%;
+  height: 50px;
+}
+
+.messages {
+  max-width: 60%;
+  margin: .5rem;
+  font-size: 1.2rem;
+  padding: .5rem;
+  border-radius: 7px;
+}
+
+.user-message {
+  margin-top: 1rem;
+  text-align: right; /* Keep user messages aligned to the right */
+  background: #FF7377;
+  color: white;
+  float: right;
+}
+
+
+.bot-reply {
+  text-align: left; /* Left alignment */
+  background: #E5E7EB;
+  margin-top: 1rem;
+  clear: both; /* Clear floating */
+  color: #FF7377;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 7px; /* Add border radius */
+  padding: .5rem; /* Add padding */
+}
+
+
+
+#inputArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 10%;
+  padding: 1rem;
+  background: transparent;
 }
 
 #userInput {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-right: 10px;
-}
-
-#sendMessage {
-  background-color: #3498db;
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-/* Back button styles */
-.back-button {
-  margin-top: 20px;
-  margin-left: 20px;
-}
-
-.back-button a {
-  text-decoration: none;
-  color: #3498db;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-}
-
-.back-button a i {
-  margin-right: 8px;
-}
-
-/* Responsive styles - adjust as needed */
-@media (max-width: 768px) {
-  .chat-container {
-    max-width: 90%;
-  }
-}
-/* Typing indicator styles */
-.typing-indicator {
-  font-style: italic;
-  color: #aaa; /* Set your desired typing indicator color */
-}
-
-/* Error message styles */
-.error-message {
-  background-color: #e74c3c; /* Set your desired background color for error messages */
-  color: #fff; /* Set your desired text color for error messages */
-  padding: 8px;
-  border-radius: 4px;
-}
-
-/* Success message styles */
-.success-message {
-  background-color: #2ecc71; /* Set your desired background color for success messages */
-  color: #fff; /* Set your desired text color for success messages */
-  padding: 8px;
-  border-radius: 4px;
-}
-
-/* Loading spinner styles */
-.spinner {
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-radius: 50%;
-  border-top: 4px solid #3498db; /* Set your desired spinner color */
-  width: 20px;
   height: 20px;
-  animation: spin 1s linear infinite;
-  margin-right: 8px;
+  width: 80%;
+  background-color: white;
+  border-radius: 6px;
+  padding: 1rem;
+  font-size: 1rem;
+  border: none;
+  outline: none;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+#send {
+  height: 50px;
+  padding: .5rem;
+  font-size: 1rem;
+  text-align: center;
+  width: 20%;
+  color: white;
+  background: #FF7377;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
 }
-
-/* Modal styles */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Set your desired modal overlay color */
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
-
-/* Responsive styles for smaller screens */
-@media (max-width: 480px) {
-  .chat-container {
-      max-width: 100%;
-  }
-
-  .user-input {
-      flex-direction: column;
-  }
-
-  #userInput {
-      margin-right: 0;
-      margin-top: 10px;
-  }
-}
-

@@ -157,7 +157,7 @@ if($totalScore >= 70) {
         </div> -->
         <div class="col-md-12">
             <div class="main-card mb-3 card">
-                <div class="card-header">Results per Category</div>
+                <div class="card-header">Ratings on the Career Advice Consultation Exam</div>
                 <div class="table-responsive">
                     <table class="align-middle mb-0 table table-borderless table-striped table-hover" id="categoryResultsTable">
                         <thead>
@@ -205,22 +205,22 @@ $overallPercentage = number_format(($totalPercentage / $totalItemsCount), 2);
 
 <!-- Display overall percentage -->
 <tr>
-    <th>Total</th>
-    <th><?php echo $overallPercentage . '%'; ?></th>
+    <!-- <th></th> -->
+    <th colspan="2">Congratulations! For taking the exam with an Overall Score of <?php echo $overallPercentage . '%'; ?></th>
 </tr> 
 <tr>
 <th>Course Recommendation</th>
     <th colspan="2">
     <?php 
-if ($overallPercentage >= 50.00 && $overallPercentage <= 60.00 ) {
+if ($overallPercentage >= 90.00 && $overallPercentage <= 100.00 ) {
     echo "1st Choice: Bachelor of Science in Architecture (BSA), ".
     "2nd Choice: Bachelor of Science in Engineering (BSE)";
 } 
-elseif ($overallPercentage >= 70.00 && $overallPercentage <= 75.00) {
+elseif ($overallPercentage >= 70.00 && $overallPercentage <= 80.00) {
     echo "1st Choice: Bachelor of Science in Nursing (BSN), ".
     "2nd Choice: Bachelor of Science in Pharmacy (BSP)";
 }
-elseif ($overallPercentage >= 40.00 && $overallPercentage <= 50.00) {
+elseif ($overallPercentage >= 40.00 && $overallPercentage <= 60.00) {
     echo "1st Choice: Bachelor of Science in Computer Science (BSCS), ".
     "2nd Choice: Bachelor of Science in Information Technology (BSIT)";
 }
@@ -228,14 +228,14 @@ elseif ($overallPercentage >= 60.00 && $overallPercentage <= 70.00) {
   echo "1st Choice: Bachelor of Elementary Education (BEE) , ".
   "2nd Choice: Bachelor of Secondary Education (BSE)";
 }
-elseif ($overallPercentage >= 75.00 && $overallPercentage <= 80.00) {
+elseif ($overallPercentage >= 80.00 && $overallPercentage <= 90.00) {
   echo "1st Choice: Bachelor of Science in Tourism Management (BSTM) , ".
   "2nd Choice: Bachelor of Science in Hospitality Management (BSHM)";
 }
 
 
 else {
-    echo "Sorry, you did not pass the exam. Please Contact ";
+    echo "Please Contact the Administrator/Guidance Counselor for the follow up and for other concerns https://www.facebook.com/ucsaldcs";
 }
 ?>
 

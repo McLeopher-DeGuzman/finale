@@ -38,28 +38,16 @@ function sendMessage(message) {
     addUserMessage(message);
 
     // Handle user messages here and generate bot responses
-    if (message.toLowerCase() === "get started") {
-        // Respond to "Get Started" message
+    if (message.toLowerCase() === "this code removes the javascript and adds a predefined response for the question how can i get career advice?") {
+        // Respond to the specified message
         addBotMessage('Great! How can I assist you with your career?');
-    } else if (message.toLowerCase().includes("career advice")) {
-        // Respond to questions about career advice
-        addBotMessage("I can provide advice on various career topics. What specific question do you have?");
-    } else if (message.toLowerCase() === "goodbye") {
-        // Respond to "Goodbye" message
-        addBotMessage("Goodbye! If you have more questions in the future, feel free to ask.");
-    } else if (message.toLowerCase() === "hello") {
-        // Respond to "Hello" message
-        addBotMessage("Hello! \nHow can I assist you?");
-    } else if (message.toLowerCase() === "hellows") {
-        // Respond to "Hello" message
-        addBotMessage("Hello! How can I assist you?");
-    } else if (message.toLowerCase().includes("networking skills")) {
-        // Respond to questions about networking skills
-        addBotMessage("Networking skills are important for building professional connections. They involve...");
+    }
+    
+    
 
 
         //bsit
-    } else if (message.toLowerCase().includes("what is bsit/bscs")) {
+    else if (message.toLowerCase().includes("what is bsit/bscs")) {
         addBotMessage(`Description:
         BSIT: Focuses on the practical application of technology in business settings, including networking, software development, and system management.
         BSCS: Emphasizes the theoretical foundations of computing, algorithms, programming languages, and software design.

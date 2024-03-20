@@ -76,7 +76,7 @@
                 </ul>
                 </li>
 
-                 <li class="app-sidebar__heading">TAKEN TEST</li>
+                 <li class="app-sidebar__heading">ITEM ANALYSIS</li>
                 <li>
                   <?php 
                     $selTakenExam = $conn->query("SELECT * FROM exam_tbl et INNER JOIN exam_attempt ea ON et.ex_id = ea.exam_id WHERE exmne_id='$exmneId' ORDER BY ea.examat_id  ");
@@ -115,7 +115,7 @@
                     </a>
                 </li> -->
             <li>
-            <li class="app-sidebar__heading">RAnking</li>
+            <li class="app-sidebar__heading">RESULTS</li>
             <li>
                     <!-- <a href="home.php?page=examineeresult"  >
                         ranking                        

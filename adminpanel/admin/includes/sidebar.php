@@ -95,13 +95,14 @@
                                         <!-- <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i> -->
                                     </a>
 
-                                    <a href="home.php?page=item_analysis">
-                                         <!-- <i class="metismenu-icon pe-7s-display2"></i> -->
-                                         <i class="metismenu-icon fas fa-user-graduate"></i>
+                                    <a href="home.php?page=result">
+    <!-- <i class="metismenu-icon pe-7s-display2"></i> -->
+                                        <i class="metismenu-icon fas fa-chart-bar"></i> <!-- Changed icon class here -->
 
-                                         Examinee Analysis
+                                        Examinee Analysis
                                         <!-- <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i> -->
                                     </a>
+
                                     <!-- <ul>
                                 <li>
                                     <a href="" data-toggle="modal" data-target="#modalForAddExaminee">

@@ -60,11 +60,11 @@
                                        <tr style="<?php 
                                                   if ($selAttempt->rowCount() == 0) {
                                                       echo "color: black;";
-                                                  } else if ($ans >= 90) {
+                                                  } else if ($ans >=90) {
                                                       echo "color: yellow;";
-                                                  } else if ($ans >= 80) {
+                                                  } else if ($ans >= 70) {
                                                       echo "color: green;";
-                                                  } else if ($ans >= 75) {
+                                                  } else if ($ans >= 40) {
                                                       echo "color: blue;";
                                                   } else {
                                                       echo "color: red;";
