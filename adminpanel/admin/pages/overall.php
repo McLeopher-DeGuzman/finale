@@ -13,24 +13,24 @@
             <div class="main-card mb-3 card">
                 <div class="card-header">OVERALL RESULTS</div>
                 <div style="text-align: right;">
-    <!-- Add a new button to print the entire table with inline styles -->
-    <button style="background-color: #1640D6;
-               border: none;
-               color: white;
-               padding: 5px 10px;
-               text-align: center;
-               text-decoration: none;
-               display: inline-block;
-               font-size: 12px;
-               margin: 1px 2px;
-               cursor: pointer;
-               border-radius: 10px;"
-        onclick="printTable();">
-    <i class="fa fa-print" style="margin-right: 5px;"></i>
-    Print Entire Table
-</button>
+                    <!-- Add a new button to print the entire table with inline styles -->
+                    <button style="background-color: #1640D6;
+                               border: none;
+                               color: white;
+                               padding: 5px 10px;
+                               text-align: center;
+                               text-decoration: none;
+                               display: inline-block;
+                               font-size: 12px;
+                               margin: 1px 2px;
+                               cursor: pointer;
+                               border-radius: 10px;"
+                            onclick="printTable();">
+                        <i class="fa fa-print" style="margin-right: 5px;"></i>
+                        Print Entire Table
+                    </button>
 
-            </div>
+                </div>
 
                 <div class="table-responsive">
                     <table class="align-middle mb-0 table table-borderless table-striped table-hover" id="tableList">
@@ -153,7 +153,8 @@
         var tableContent = document.getElementById("tableList").outerHTML;
 
         var currentDate = new Date();
-        var formattedDate = currentDate.toLocaleDateString();
+        var formattedDate = currentDate
+        .toLocaleDateString();
         var formattedTime = currentDate.toLocaleTimeString();
 
         var headerContent = `
@@ -177,8 +178,6 @@
         </div>
     </div>
 `;
-
-
 
         var footerContent = `
             <div style="margin-top: 20px;">
@@ -233,8 +232,6 @@
             </head>
             <body>
                 <!-- Header Content -->
-                
-
                 ${headerContent}
                 
                 <!-- Table Content -->

@@ -38,10 +38,28 @@ try {
   <title>Chatbot</title>
   <link rel="stylesheet" href="styles.css">
   <link rel = "shortcut icon" href = "../login-ui/images/UCS-removebg-preview.png">
+  <style>
+    #backButton {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: #FF7377;
+      border: 1px solid #fff;
+      padding: 10px 15px;
+      cursor: pointer;
+      border-radius: 15px;
+      cursor: pointer;
+      color: #fff;
+    }
+  </style>
 </head>
 <body>
   <div id="bot">
     <div id="container">
+      <a href="/UCS/home.php">
+      <button id="backButton" >Back</button>
+
+      </a>
       <div id="header">
       <img src="ucs.png" alt="Chatbot Logo" class="logo" width="50">
         Career Advice Chat
