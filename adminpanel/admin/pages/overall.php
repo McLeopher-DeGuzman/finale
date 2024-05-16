@@ -33,7 +33,7 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="align-middle mb-0 table table-borderless table-striped table-hover" id="tableList">
+                <table id="tableList" class="align-middle mb-0 table table-striped table-bordered dataTable" style="width:100%">
                         
                         <thead>
                             <tr>
