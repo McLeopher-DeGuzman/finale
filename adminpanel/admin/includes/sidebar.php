@@ -102,6 +102,13 @@
                                         Examinee Analysis
                                         <!-- <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i> -->
                                     </a>
+                                    <a href="home.php?page=item_analysis">
+                                        <!-- <i class="metismenu-icon pe-7s-display2"></i> -->
+                                        <i class="metismenu-icon fas fa-tasks"></i> <!-- Changed icon class here -->
+
+                                        Item Analysis
+                                        <!-- <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i> -->
+                                    </a>
 
                                     <!-- <ul>
                                 <li>

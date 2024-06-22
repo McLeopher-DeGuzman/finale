@@ -188,7 +188,7 @@
         var printContent = `
         <html>
             <head>
-                <title>Print Results</title>
+                <title></title>
                 <link rel = "shortcut icon" href = "../../login-ui/images/UCS-removebg-preview.png">
                 <link rel="stylesheet" type="text/css" href="css/mycss.css">
                 <style>
@@ -198,7 +198,7 @@
                     }
 
                     .title {
-                        font-size: 18px;
+                        font-size: 15px;
                         // font-weight: bold;
                     }
 

@@ -13,6 +13,26 @@
                 <div class="main-card mb-3 card">
                     <div class="card-header">ranking yearly
                     </div>
+                    <div style="text-align: right;">
+                    <!-- Add a new button to print the entire table with inline styles -->
+                    <button style="background-color: #1640D6;
+                               border: none;
+                               color: white;
+                               padding: 5px 10px;
+                               text-align: center;
+                               text-decoration: none;
+                               display: inline-block;
+                               font-size: 12px;
+                               margin: 1px 2px;
+                               cursor: pointer;
+                               border-radius: 10px;"
+                            onclick="printTable();">
+                        <i class="fa fa-print" style="margin-right: 5px;"></i>
+                        Print Entire Table
+                    </button>
+
+                </div>
+
                     <div class="table-responsive">
                     <table id="tableList" class="align-middle mb-0 table table-striped table-bordered dataTable" style="width:100%">
                             <thead>
@@ -98,3 +118,110 @@
       
         
 </div>
+
+<script>
+    function printTable() {
+        var printWindow = window.open('', '_blank');
+        var tableContent = document.getElementById("tableList").outerHTML;
+
+        var currentDate = new Date();
+        var formattedDate = currentDate
+        .toLocaleDateString();
+        var formattedTime = currentDate.toLocaleTimeString();
+
+        var headerContent = `
+    <div style="text-align: center;">
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="flex: 1;">
+                <img src="./login-ui/images/UCS-removebg-preview.png" alt="Left Logo" class="left-logo" style="width:100px;">
+            </div>
+            <div style="flex: 3;">
+                <div class="title">Archdiocese of Lingayen Dagupan Catholic Schools</div>
+                <div class="title">URBIZTONDO CATHOLIC SCHOOL, INC.</div>
+                <div class="title">Contact No. (075. 540-1712 / 0923-086-2353)</div>
+                <div class="title">Urbiztondo Catholic School-ALDCS @ucsaldcs</div>
+                <div class="title">SENIOR HIGH SCHOOL DEPARTMENT</div>
+                <br>
+                <div class="subtitle">Date: ${formattedDate}        Time: ${formattedTime}</div>
+            </div>
+            <div style="flex: 1;">
+                <img src="./login-ui/images/al.png" alt="Right Logo" class="right-logo" style="width:100px;">
+            </div>
+        </div>
+    </div>
+`;
+
+        var footerContent = `
+            <div style="margin-top: 20px;">
+                <div class="subtitle">Thank you for using our service!</div>
+            </div>
+        `;
+
+        var printContent = `
+        <html>
+            <head>
+                <title></title>
+                <link rel = "shortcut icon" href = "../../login-ui/images/UCS-removebg-preview.png">
+                <link rel="stylesheet" type="text/css" href="css/mycss.css">
+                <style>
+                    /* Add any additional styles here if needed */
+                    body {
+                        text-align: center;
+                    }
+
+                    .title {
+                        font-size: 15px;
+                        // font-weight: bold;
+                    }
+
+                    .subtitle {
+                        font-size: 15px;
+                    }
+
+                    .logo {
+                        width: 30px; /* Adjust the width as needed */
+                        height: auto;
+                        display: block;
+                        margin-bottom: 20px;
+                    }
+
+                    .table {
+                        margin: 20px auto; /* Center the table */
+                        border-collapse: collapse;
+                        width: 100%; /* Adjust the width as needed */
+                    }
+
+                    th, td {
+                        border: 2px solid #dddddd;
+                        text-align: left;
+                        padding: 8px;
+                    }
+
+                    th {
+                        background-color: #f2f2f2;
+                    }
+                </style>
+            </head>
+            <body>
+                <!-- Header Content -->
+                ${headerContent}
+                
+                <!-- Table Content -->
+                <table>
+                    ${tableContent}
+                </table>
+
+                <!-- Footer Content -->
+                <hr>
+                ${footerContent}
+            </body>
+        </html>
+        `;
+
+        printWindow.document.open();
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        printWindow.print();
+        printWindow.close();
+    }
+</script>

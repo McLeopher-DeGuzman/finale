@@ -57,13 +57,20 @@
         <div class="app-page-title">
             <div class="page-title-wrapper">
                 <div class="page-title-heading">
-                    <div><b>EXAMINEE ANALYSIS</b></div>
+                    <div>EXAMINEE ANALYSIS</div>
                 </div>
             </div>
         </div> 
         <div class="col-md-12">
             <div class="main-card mb-3 card">
-                <div class="card-header">EXAMINEE LIST</div>
+                <div class="card-header">
+                    EXAMINEE LIST
+                    <form method="GET" class="float-right">
+                        <input type="hidden" name="page" value="result">
+                        <input type="text" name="search" placeholder="Search by name" class="form-control" style="width: 200px; display: inline; left: 50vw; position: relative; ">
+                        <button type="submit" class="btn btn-primary btn-sm" style=" display: inline; left: 50vw; position: relative; "><i class="fas fa-search"></i></button>
+                    </form>
+                </div>
                 <div class="table-responsive">
                     <table id="tableList" class="align-middle mb-0 table table-striped table-bordered dataTable" style="width:100%">
                         <thead>
@@ -75,9 +82,30 @@
                         </thead>
                         <tbody>
                             <?php 
-                                $selExmne = $conn->query("SELECT * FROM examinee_tbl INNER JOIN exam_attempt ON examinee_tbl.exmne_id = exam_attempt.exmne_id ORDER BY exam_attempt.examat_id ");
-                                if($selExmne->rowCount() > 0) {
-                                    while ($selExmneRow = $selExmne->fetch(PDO::FETCH_ASSOC)) { ?>
+                                // Default query part
+                                $query = "SELECT * FROM examinee_tbl INNER JOIN exam_attempt ON examinee_tbl.exmne_id = exam_attempt.exmne_id ";
+
+                                // Check if there is a search query
+                                if(isset($_GET['search']) && !empty($_GET['search'])) {
+                                    $search = $_GET['search'];
+                                    $query .= "WHERE exmne_fullname LIKE :search ";
+                                }
+
+                                // Order by
+                                $query .= "ORDER BY exam_attempt.examat_id ";
+
+                                // Prepare and execute the query
+                                $stmt = $conn->prepare($query);
+
+                                // Bind the search parameter if exists
+                                if(isset($search)) {
+                                    $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+                                }
+
+                                $stmt->execute();
+
+                                if($stmt->rowCount() > 0) {
+                                    while ($selExmneRow = $stmt->fetch(PDO::FETCH_ASSOC)) { ?>
                                         <tr>
                                            <td><?php echo $selExmneRow['exmne_fullname']; ?></td>
                                            <td>
@@ -94,7 +122,7 @@
                                     <?php }
                                 } else { ?>
                                     <tr>
-                                        <td colspan="2"><h3 class="p-3">No Course Found</h3></td>
+                                        <td colspan="3"><h3 class="p-3">No Examinee Found</h3></td>
                                     </tr>
                                 <?php }
                             ?>

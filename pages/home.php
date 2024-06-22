@@ -189,25 +189,25 @@ img {vertical-align: middle;}
 <div class="mySlides">
   <div class="numbertext">1 / 4</div>
   <img src="assets/images/1.png" style="width:100%">
-  <div class="text">Caption Text</div>
+  <div class="text">Page 1</div>
 </div>
 
 <div class="mySlides">
   <div class="numbertext">2 / 4</div>
   <img src="assets/images/2.png" style="width:100%">
-  <div class="text">Caption Two</div>
+  <div class="text">Page 2</div>
 </div>
 
 <div class="mySlides">
   <div class="numbertext">3 / 4</div>
   <img src="assets/images/4.png" style="width:100%">
-  <div class="text">Caption Three</div>
+  <div class="text">Page 3</div>
 </div>
 
 <div class="mySlides">
   <div class="numbertext">4 / 4</div>
   <img src="assets/images/3.png" style="width:100%">
-  <div class="text">Caption Three</div>
+  <div class="text">Page 4</div>
 </div>
 
 <a class="prev" onclick="plusSlides(-1)">❮</a>
