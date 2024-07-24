@@ -44,9 +44,105 @@
       font-weight: bold;
 	  font font-family: Arial;
     }
+	.loader-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9); /* Adding a background color */
+            z-index: 9999;
+        }
+
+        .loader {
+            width: 70px;
+            height: 70px;
+            position: relative;
+        }
+
+        .loader:before {
+            content: "";
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 6px solid #EF6262;
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .loader:after {
+            content: "";
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 6px solid transparent;
+            border-top-color: #EF6262;
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: spin 3s linear infinite;
+        }
+
+        .loader-text {
+            font-size: 26px;
+            margin-top: 20px;
+            color: #EF6262;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.6);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(0.6);
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .content {
+            display: none;
+        }
+
+        .loaded .loader-container {
+            display: none;
+        }
+
+        .loaded .content {
+            display: block;
+        }
+
 	</style>
 </head>
 <body>
+
+<div class="loader-container" id="page-loader">
+        <div class="loader"></div>
+        <div class="loader-text">Loading...</div>
+    </div>
+
 	
 	<div class="limiter">
 	<div class="title-bar">
@@ -105,5 +201,27 @@
 	<script src="login-ui/vendor/countdowntime/countdowntime.js"></script>
 	<script src="login-ui/js/main.js"></script>
 
+	<script type="text/javascript">
+        $(document).ready(function() {
+            function disableBack() { window.history.forward(); }
+
+            window.onload = disableBack();
+            window.onpageshow = function(evt) { if (evt.persisted) disableBack(); }
+
+            // Hide loader after 1 minute (60000 milliseconds)
+            setTimeout(function() {
+                $('#page-loader').fadeOut('slow', function() {
+                    $('body').addClass('loaded');
+                });
+            }, 000); // 1 minute in milliseconds
+
+            // Also hide loader once the page is fully loaded
+            $(window).on('load', function() {
+                $('#page-loader').fadeOut('slow', function() {
+                    $('body').addClass('loaded');
+                });
+            });
+        });
+    </script>
 </body>
 </html>

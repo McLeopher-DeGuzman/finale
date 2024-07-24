@@ -1,57 +1,119 @@
-<div class="app-main__outer">
-    <div class="app-main__inner">
-        <div class="app-page-title">
-            <div class="page-title-wrapper">
-                <div class="page-title-heading">
-                    <div>ITEM ANALYSIS</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Analysis</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .table-responsive {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        th, td {
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-main__outer">
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div>ITEM ANALYSIS</div>
+                    </div>
                 </div>
-            </div>
-        </div> 
-        <div class="col-md-12">
-            <div class="main-card mb-3 card">
-                <div class="card-header">ITEM ANALYSIS</div>
-                <div class="table-responsive">
-                    <table id="tableList" class="align-middle mb-0 table table-striped table-bordered dataTable" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>Question</th>
-                                <th>Correct Answers</th>
-                                <th>Incorrect Answers</th>
-                                <th>Total Answers</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                                @$examId = $_GET['id'];
-                                $selQuest = $conn->query("SELECT eqt.exam_question, 
-                                                                 COUNT(CASE WHEN ea.exans_answer = eqt.exam_answer THEN 1 END) AS correct_answers,
-                                                                 COUNT(CASE WHEN ea.exans_answer != eqt.exam_answer THEN 1 END) AS incorrect_answers,
-                                                                 COUNT(ea.exans_answer) AS total_answers
-                                                           FROM exam_question_tbl eqt 
-                                                           LEFT JOIN exam_answers ea 
-                                                           ON eqt.eqt_id = ea.quest_id 
-                                                           WHERE eqt.exam_id='$examId' 
-                                                           GROUP BY eqt.exam_question");
+            </div> 
+            <div class="col-md-12">
+                <div class="main-card mb-3 card">
+                    <div class="card-header">ITEM ANALYSIS</div>
+                    <div class="card-body">
+                        <p>1: Correct - 0: Incorrect</p>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <?php for ($i = 1; $i <= 80; $i++): ?>
+                                        <th>Q<?php echo $i; ?></th>
+                                    <?php endfor; ?>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                    // Assuming you have the total number of examinees
+                                    $total = $selExaminee['totExaminee'];  // Placeholder, replace with actual data
 
-                                if ($selQuest->rowCount() > 0) {
-                                    while ($selQuestRow = $selQuest->fetch(PDO::FETCH_ASSOC)) { ?>
-                                        <tr>
-                                            <td><?php echo $selQuestRow['exam_question']; ?></td>
-                                            <td><?php echo $selQuestRow['correct_answers']; ?></td>
-                                            <td><?php echo $selQuestRow['incorrect_answers']; ?></td>
-                                            <td><?php echo $selQuestRow['total_answers']; ?></td>
-                                        </tr>
-                                    <?php }
-                                } else { ?>
+                                    // Generate random answers for each student
+                                    $answers = [];
+                                    for ($i = 0; $i < $total; $i++) {
+                                        $answers[$i] = array_map(function() {
+                                            return rand(0, 1);
+                                        }, range(1, 80));
+                                    }
+
+                                    // Initialize array to store the count of correct answers for each question
+                                    $question_correct_counts = array_fill(0, 80, 0);
+
+                                    // Output the answers in the table
+                                    for ($student = 1; $student <= $total; $student++):
+                                        $student_answers = $answers[$student - 1];
+                                        $total_correct = array_sum($student_answers);
+
+                                        // Update the count of correct answers for each question
+                                        foreach ($student_answers as $index => $answer) {
+                                            if ($answer == 1) {
+                                                $question_correct_counts[$index]++;
+                                            }
+                                        }
+                                ?>
                                     <tr>
-                                        <td colspan="4"><h3 class="p-3">No Questions Found</h3></td>
+                                        <td>Student <?php echo $student; ?></td>
+                                        <?php foreach ($student_answers as $answer): ?>
+                                            <td><?php echo $answer; ?></td>
+                                        <?php endforeach; ?>
+                                        <td><?php echo $total_correct; ?></td>
                                     </tr>
-                                <?php }
-                            ?>
-                        </tbody>
-                    </table>
+                                <?php endfor; ?>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Correct Count</th>
+                                    <?php foreach ($question_correct_counts as $count): ?>
+                                        <th><?php echo $count; ?></th>
+                                    <?php endforeach; ?>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- <div class="col-md-6 col-xl-4">
+                        <div class="card mb-3 widget-content bg-grow-early">
+                            <div class="widget-content-wrapper text-white">
+                                <div class="widget-content-left">
+                                    <div class="widget-heading">Total Examinee Students</div>
+                                    <div class="widget-subheading" style="color:transparent;">.</div>
+                                </div>
+                                <div class="widget-content-right">
+                                    <div class="widget-numbers text-white"><span><?php echo $total; ?></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
                 </div>
-            </div>
-        </div>     
+            </div>     
+        </div>
     </div>
-</div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
