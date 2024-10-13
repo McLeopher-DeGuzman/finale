@@ -1,3 +1,29 @@
+<?php
+// Set page number or default to 1
+if (isset($_GET['page_no']) && $_GET['page_no'] !== "") {
+    $page_no = (int)$_GET['page_no'];
+} else {
+    $page_no = 1;
+}
+
+$total_records_per_page = 10;
+$offset = ($page_no - 1) * $total_records_per_page;
+$previous_page = $page_no - 1;
+$next_page = $page_no + 1;
+
+// Get total record count using PDO
+$stmt = $conn->query("SELECT COUNT(*) as total_records FROM course_tbl");
+$records = $stmt->fetch(PDO::FETCH_ASSOC);
+$total_records = $records['total_records'];
+
+$total_no_of_pages = ceil($total_records / $total_records_per_page);
+
+// Fetch course data
+$sql = "SELECT * FROM course_tbl LIMIT $offset, $total_records_per_page";
+$stmt = $conn->query($sql);
+$courses = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,32 +47,21 @@
             <div class="col-md-12">
                 <div class="main-card mb-3 card">
                     <div class="card-header">OVERALL RESULTS</div>
-                    <div style="text-align: right;">
-                        <button style="background-color: #1640D6;
-                                    border: none;
-                                    color: white;
-                                    padding: 5px 10px;
-                                    text-align: center;
-                                    text-decoration: none;
-                                    display: inline-block;
-                                    font-size: 12px;
-                                    margin: 1px 2px;
-                                    cursor: pointer;
-                                    border-radius: 10px;"
+                    <div class="text-right">
+                        <button class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none"
                                 onclick="printTable();">
-                            <i class="fa fa-print" style="margin-right: 5px;"></i>
-                            Print Entire Table
+                            <i class="fa fa-print mr-2"></i>Print Entire Table
                         </button>
                     </div>
 
-                    <div class="table-responsive">
-                        <table id="tableList" class="align-middle mb-0 table table-striped table-bordered dataTable w-full">
+                    <div class="table-responsive mt-3">
+                        <table id="tableList" class="table table-striped table-bordered">
                             <thead>
                                 <tr>
-                                    <th style="width: 18%">Full Name</th>
-                                    <th style="width: 15%">Exam Name</th>
-                                    <th style="width: 10%">Scores</th>
-                                    <th>Over All</th>
+                                    <th>Full Name</th>
+                                    <th>Exam Name</th>
+                                    <th>Scores</th>
+                                    <th>Overall (%)</th>
                                     <th>Course Recommendation</th>
                                 </tr>
                             </thead>
@@ -56,55 +71,50 @@
                                 if($selExmne->rowCount() > 0) {
                                     while ($selExmneRow = $selExmne->fetch(PDO::FETCH_ASSOC)) { ?>
                                         <tr>
-                                            <td><?php echo $selExmneRow['exmne_fullname']; ?></td>
+                                            <td><?= $selExmneRow['exmne_fullname']; ?></td>
                                             <td>
                                                 <?php 
                                                 $eid = $selExmneRow['exmne_id'];
-                                                $selExName = $conn->query("SELECT * FROM exam_tbl et INNER JOIN exam_attempt ea ON et.ex_id=ea.exam_id WHERE  ea.exmne_id='$eid' ")->fetch(PDO::FETCH_ASSOC);
+                                                $selExName = $conn->query("SELECT * FROM exam_tbl et INNER JOIN exam_attempt ea ON et.ex_id = ea.exam_id WHERE ea.exmne_id = '$eid' ")->fetch(PDO::FETCH_ASSOC);
                                                 $exam_id = $selExName['ex_id'];
                                                 echo $selExName['ex_title'];
                                                 ?>
                                             </td>
                                             <td>
                                                 <?php 
-                                                $selScore = $conn->query("SELECT * FROM exam_question_tbl eqt INNER JOIN exam_answers ea ON eqt.eqt_id = ea.quest_id AND eqt.exam_answer = ea.exans_answer  WHERE ea.axmne_id='$eid' AND ea.exam_id='$exam_id' AND ea.exans_status='new' ");
+                                                $selScore = $conn->query("SELECT * FROM exam_question_tbl eqt INNER JOIN exam_answers ea ON eqt.eqt_id = ea.quest_id AND eqt.exam_answer = ea.exans_answer WHERE ea.axmne_id = '$eid' AND ea.exam_id = '$exam_id' AND ea.exans_status = 'new' ");
                                                 ?>
                                                 <span>
-                                                    <?php echo $selScore->rowCount(); ?>
+                                                    <?= $selScore->rowCount(); ?>
                                                     <?php 
                                                         $over  = $selExName['ex_questlimit_display'];
                                                     ?>
-                                                </span> / <?php echo $over; ?>
+                                                </span> / <?= $over; ?>
                                             </td>
                                             <td>
-                                                <?php 
-                                                $selScore = $conn->query("SELECT * FROM exam_question_tbl eqt INNER JOIN exam_answers ea ON eqt.eqt_id = ea.quest_id AND eqt.exam_answer = ea.exans_answer  WHERE ea.axmne_id='$eid' AND ea.exam_id='$exam_id' AND ea.exans_status='new' ");
-                                                ?>
-                                                <span>
-                                                    <?php
-                                                    $score = $selScore->rowCount();
-                                                    $ans = $score / $over * 100;
-                                                    $formattedAns = number_format($ans, 2);
+                                                <?php
+                                                $score = $selScore->rowCount();
+                                                $ans = ($score / $over) * 100;
+                                                $formattedAns = number_format($ans, 2);
+                                                echo $formattedAns . "%";
 
-                                                    echo $formattedAns . "%";
-
+                                                // Course recommendation logic
+                                                if ($formattedAns >= 90.00) {
+                                                    $courseRecommendation = "Architecture, Engineering";
+                                                } elseif ($formattedAns >= 80.00) {
+                                                    $courseRecommendation = "Tourism, Hospitality Management";
+                                                } elseif ($formattedAns >= 70.00) {
+                                                    $courseRecommendation = "Nursing, Pharmacy";
+                                                } elseif ($formattedAns >= 60.00) {
+                                                    $courseRecommendation = "Education (Secondary, Elementary)";
+                                                } elseif ($formattedAns >= 40.00) {
+                                                    $courseRecommendation = "IT, Computer Science";
+                                                } else {
                                                     $courseRecommendation = "Unknown";
-
-                                                    if ($formattedAns >= 40.00 && $formattedAns <= 60.00) {
-                                                        $courseRecommendation = "Bachelor of Science in Computer Science (BSCS), Bachelor of Science in Information Technology (BSIT)";
-                                                    } elseif ($formattedAns >= 90.00 && $formattedAns <= 100.00) {
-                                                        $courseRecommendation = "Bachelor of Science in Architecture (BSA), Bachelor of Science in Engineering (BSE)";
-                                                    } elseif ($formattedAns >= 60.00 && $formattedAns <= 70.00) {
-                                                        $courseRecommendation = "Bachelor of Elementary Education (BEE), Bachelor of Secondary Education (BSE)";
-                                                    } elseif ($formattedAns >= 70.00 && $formattedAns <= 80.00) {
-                                                        $courseRecommendation = "Bachelor of Science in Nursing (BSN), Bachelor of Science in Pharmacy (BSP)";
-                                                    } elseif ($formattedAns >= 80.00 && $formattedAns <= 90.00) {
-                                                        $courseRecommendation = "Bachelor of Science in Tourism Management (BSTM), Bachelor of Science in Hospitality Management (BSHM)";
-                                                    }
-                                                    ?> 
-                                                </span> 
+                                                }
+                                                ?>
                                             </td>
-                                            <td><?php echo $courseRecommendation; ?></td>
+                                            <td><?= $courseRecommendation; ?></td>
                                         </tr>
                                     <?php }
                                 } else { ?>
@@ -118,53 +128,41 @@
                         </table>
                     </div>
 
-                    <!-- Pagination Controls -->
-                    <div class="px-4 py-3 flex items-center justify-between border-t border-gray-200 bg-white">
-                        <div class="flex-1 flex justify-between sm:hidden">
-                            <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                Previous
-                            </a>
-                            <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                Next
-                            </a>
+                    <!-- Pagination and Info Section -->
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <!-- Page Info Display (Left) -->
+                        <div class="pagination-info">
+                            <strong>Page <?= $page_no; ?> of <?= $total_no_of_pages; ?></strong>
                         </div>
-                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                            <div>
-                                <p class="text-sm text-gray-700">
-                                    Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">50</span> results
-                                </p>
-                            </div>
-                            <div>
-                                <nav class="relative inline-flex items-center space-x-2" aria-label="Pagination">
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        Previous
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        1
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        2
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        3
-                                    </a>
-                                    <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md shadow-sm">
-                                        ...
-                                    </span>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        10
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        Next
-                                    </a>
-                                </nav>
-                            </div>
-                        </div>
+
+                        <!-- Pagination Links (Right) -->
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-end">
+                                <!-- Previous Page Link -->
+                                <li class="page-item <?= ($page_no <= 1) ? 'disabled' : ''; ?>">
+                                    <a class="page-link" href="<?= ($page_no > 1) ? '?page=overall&page_no=' . $previous_page : '#'; ?>">Previous</a>
+                                </li>
+
+                                <!-- Page Number Links -->
+                                <?php for ($i = 1; $i <= $total_no_of_pages; $i++) { ?>
+                                    <li class="page-item <?= ($i == $page_no) ? 'active' : ''; ?>">
+                                        <a class="page-link" href="?page=overall&page_no=<?= $i; ?>"><?= $i; ?></a>
+                                    </li>
+                                <?php } ?>
+
+                                <!-- Next Page Link -->
+                                <li class="page-item <?= ($page_no >= $total_no_of_pages) ? 'disabled' : ''; ?>">
+                                    <a class="page-link" href="<?= ($page_no < $total_no_of_pages) ? '?page=overall&page_no=' . $next_page : '#'; ?>">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</body>
+</html>
 
     <script>
         function printTable() {

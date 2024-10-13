@@ -1,3 +1,29 @@
+<?php
+// Set page number or default to 1
+if (isset($_GET['page_no']) && $_GET['page_no'] !== "") {
+    $page_no = (int)$_GET['page_no'];
+} else {
+    $page_no = 1;
+}
+
+$total_records_per_page = 10;
+$offset = ($page_no - 1) * $total_records_per_page;
+$previous_page = $page_no - 1;
+$next_page = $page_no + 1;
+
+// Get total record count using PDO
+$stmt = $conn->query("SELECT COUNT(*) as total_records FROM course_tbl");
+$records = $stmt->fetch(PDO::FETCH_ASSOC);
+$total_records = $records['total_records'];
+
+$total_no_of_pages = ceil($total_records / $total_records_per_page);
+
+// Fetch course data
+$sql = "SELECT * FROM course_tbl LIMIT $offset, $total_records_per_page";
+$stmt = $conn->query($sql);
+$courses = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -85,49 +111,36 @@
                         </table>
                     </div>
 
-                    <!-- Pagination Controls -->
-                    <div class="px-4 py-3 flex items-center justify-between border-t border-gray-200 bg-white">
-                        <div class="flex-1 flex justify-between sm:hidden">
-                            <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                Previous
-                            </a>
-                            <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                Next
-                            </a>
-                        </div>
-                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                            <div>
-                                <p class="text-sm text-gray-700">
-                                    Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">50</span> results
-                                </p>
-                            </div>
-                            <div>
-                                <nav class="relative inline-flex items-center space-x-2" aria-label="Pagination">
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        Previous
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        1
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        2
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        3
-                                    </a>
-                                    <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md shadow-sm">
-                                        ...
-                                    </span>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        10
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        Next
-                                    </a>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Pagination and Info Section -->
+<div class="d-flex justify-content-between align-items-center mt-4">
+    <!-- Page Info Display (Left) -->
+    <div class="pagination-info">
+        <strong>Page <?= $page_no; ?> of <?= $total_no_of_pages; ?></strong>
+    </div>
+
+    <!-- Pagination Links (Right) -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-end">
+            <!-- Previous Page Link -->
+            <li class="page-item <?= ($page_no <= 1) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="<?= ($page_no > 1) ? '?page=examinee-result&page_no=' . $previous_page : '#'; ?>">Previous</a>
+            </li>
+
+            <!-- Page Number Links -->
+            <?php for ($i = 1; $i <= $total_no_of_pages; $i++) { ?>
+                <li class="page-item <?= ($i == $page_no) ? 'active' : ''; ?>">
+                    <a class="page-link" href="?page=examinee-result&page_no=<?= $i; ?>"><?= $i; ?></a>
+                </li>
+            <?php } ?>
+
+            <!-- Next Page Link -->
+            <li class="page-item <?= ($page_no >= $total_no_of_pages) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="<?= ($page_no < $total_no_of_pages) ? '?page=examinee-result&page_no=' . $next_page : '#'; ?>">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
                 </div>
             </div>
         </div>

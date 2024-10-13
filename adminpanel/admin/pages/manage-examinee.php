@@ -1,3 +1,28 @@
+<?php
+if (isset($_GET['page_no']) && $_GET['page_no'] !== "") {
+    $page_no = (int)$_GET['page_no'];
+} else {
+    $page_no = 1;
+}
+
+$total_records_per_page = 10;
+$offset = ($page_no - 1) * $total_records_per_page;
+$previous_page = $page_no - 1;
+$next_page = $page_no + 1;
+
+// Get total record count using PDO
+$stmt = $conn->query("SELECT COUNT(*) as total_records FROM examinee_tbl");
+$records = $stmt->fetch(PDO::FETCH_ASSOC);
+$total_records = $records['total_records'];
+
+$total_no_of_pages = ceil($total_records / $total_records_per_page);
+
+// Fetch examinee data
+$sql = "SELECT * FROM examinee_tbl LIMIT $offset, $total_records_per_page";
+$stmt = $conn->query($sql);
+$examinees = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +31,17 @@
     <title>Manage Examinee with Pagination</title>
     <link rel="stylesheet" type="text/css" href="css/mycss.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .pagination-info {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
 </head>
 <body>
     <div class="app-main__outer">
@@ -42,38 +78,34 @@
                             </thead>
                             <tbody>
                                 <?php 
-                                $selExmne = $conn->query("SELECT * FROM examinee_tbl ORDER BY exmne_id DESC ");
-                                if($selExmne->rowCount() > 0)
-                                {
-                                    while ($selExmneRow = $selExmne->fetch(PDO::FETCH_ASSOC)) { ?>
+                                if (count($examinees) > 0) {
+                                    foreach ($examinees as $selExmneRow) { ?>
                                         <tr>
-                                            <td><?php echo $selExmneRow['exmne_fullname']; ?></td>
-                                            <td><?php echo $selExmneRow['exmne_gender']; ?></td>
-                                            <td><?php echo $selExmneRow['exmne_birthdate']; ?></td>
+                                            <td><?php echo htmlspecialchars($selExmneRow['exmne_fullname']); ?></td>
+                                            <td><?php echo htmlspecialchars($selExmneRow['exmne_gender']); ?></td>
+                                            <td><?php echo htmlspecialchars($selExmneRow['exmne_birthdate']); ?></td>
                                             <td>
-                                                <?php 
+                                                <?php
                                                     $exmneCourse = $selExmneRow['exmne_course'];
-                                                    $selCourse = $conn->query("SELECT * FROM course_tbl WHERE cou_id='$exmneCourse' ")->fetch(PDO::FETCH_ASSOC);
-                                                    echo $selCourse['cou_name'];
+                                                    $selCourse = $conn->query("SELECT * FROM course_tbl WHERE cou_id='$exmneCourse'")->fetch(PDO::FETCH_ASSOC);
+                                                    echo htmlspecialchars($selCourse['cou_name']);
                                                 ?>
                                             </td>
-                                            <td><?php echo $selExmneRow['exmne_year_level']; ?></td>
-                                            <td><?php echo $selExmneRow['exmne_email']; ?></td>
-                                            <td><?php echo md5($selExmneRow['exmne_password']); ?></td>
-                                            <td><?php echo $selExmneRow['exmne_status']; ?></td>
+                                            <td><?php echo htmlspecialchars($selExmneRow['exmne_year_level']); ?></td>
+                                            <td><?php echo htmlspecialchars($selExmneRow['exmne_email']); ?></td>
+                                            <td><?php echo htmlspecialchars(md5($selExmneRow['exmne_password'])); ?></td>
+                                            <td><?php echo htmlspecialchars($selExmneRow['exmne_status']); ?></td>
                                             <td>
-                                                <a rel="facebox" href="facebox_modal/updateExaminee.php?id=<?php echo $selExmneRow['exmne_id']; ?>" class="btn btn-sm btn-primary">
+                                                <a rel="facebox" href="facebox_modal/updateExaminee.php?id=<?php echo htmlspecialchars($selExmneRow['exmne_id']); ?>" class="btn btn-sm btn-primary">
                                                     <i class="fas fa-edit"></i> 
                                                 </a>
-                                                <button type="button" id="deleteExaminee" data-id='<?php echo $selExmneRow['exmne_id']; ?>' class="btn btn-danger btn-sm">
+                                                <button type="button" id="deleteExaminee" data-id='<?php echo htmlspecialchars($selExmneRow['exmne_id']); ?>' class="btn btn-danger btn-sm">
                                                     <i class="fas fa-trash"></i> 
                                                 </button>
                                             </td>
                                         </tr>
                                     <?php }
-                                }
-                                else
-                                { ?>
+                                } else { ?>
                                     <tr>
                                         <td colspan="9">
                                             <h3 class="p-3">No Examinee Found</h3>
@@ -84,49 +116,37 @@
                             </tbody>
                         </table>
                     </div>
-                    <!-- Pagination -->
-                    <div class="px-4 py-3 flex items-center justify-between border-t border-gray-200 bg-white">
-                        <div class="flex-1 flex justify-between sm:hidden">
-                            <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm">
-                                Previous
-                            </a>
-                            <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm">
-                                Next
-                            </a>
+
+                    <!-- Pagination and Info Section -->
+                    <div class="pagination-container">
+                        <!-- Page Info Display (Left) -->
+                        <div class="pagination-info">
+                            <strong>Page <?= $page_no; ?> of <?= $total_no_of_pages; ?></strong>
                         </div>
-                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                            <div>
-                                <p class="text-sm text-gray-700">
-                                    Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">50</span> results
-                                </p>
-                            </div>
-                            <div>
-                                <nav class="relative inline-flex items-center space-x-2" aria-label="Pagination">
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        Previous
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        1
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        2
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        3
-                                    </a>
-                                    <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md shadow-sm">
-                                        ...
-                                    </span>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        10
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        Next
-                                    </a>
-                                </nav>
-                            </div>
-                        </div>
+
+                        <!-- Pagination Links (Right) -->
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-end">
+                                <!-- Previous Page Link -->
+                                <li class="page-item <?= ($page_no <= 1) ? 'disabled' : ''; ?>">
+                                    <a class="page-link" href="<?= ($page_no > 1) ? '?page=manage-examinee&page_no=' . $previous_page : '#'; ?>">Previous</a>
+                                </li>
+
+                                <!-- Page Number Links -->
+                                <?php for ($i = 1; $i <= $total_no_of_pages; $i++) { ?>
+                                    <li class="page-item <?= ($i == $page_no) ? 'active' : ''; ?>">
+                                        <a class="page-link" href="?page=manage-examinee&page_no=<?= $i; ?>"><?= $i; ?></a>
+                                    </li>
+                                <?php } ?>
+
+                                <!-- Next Page Link -->
+                                <li class="page-item <?= ($page_no >= $total_no_of_pages) ? 'disabled' : ''; ?>">
+                                    <a class="page-link" href="<?= ($page_no < $total_no_of_pages) ? '?page=manage-examinee&page_no=' . $next_page : '#'; ?>">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
+
                 </div>
             </div>
         </div>

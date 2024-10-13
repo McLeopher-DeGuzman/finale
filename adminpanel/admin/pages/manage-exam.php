@@ -1,3 +1,33 @@
+<?php
+// Set page number or default to 1
+if (isset($_GET['page_no']) && $_GET['page_no'] !== "") {
+    $page_no = (int)$_GET['page_no'];
+} else {
+    $page_no = 1;
+}
+
+$total_records_per_page = 10;
+$offset = ($page_no - 1) * $total_records_per_page;
+$previous_page = $page_no - 1;
+$next_page = $page_no + 1;
+
+// Get total record count using a prepared statement
+$stmt = $conn->prepare("SELECT COUNT(*) as total_records FROM exam_tbl");
+$stmt->execute();
+$records = $stmt->fetch(PDO::FETCH_ASSOC);
+$total_records = $records['total_records'];
+
+$total_no_of_pages = ceil($total_records / $total_records_per_page);
+
+// Fetch course data using a prepared statement
+$sql = "SELECT * FROM exam_tbl LIMIT :offset, :total_records_per_page";
+$stmt = $conn->prepare($sql);
+$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+$stmt->bindParam(':total_records_per_page', $total_records_per_page, PDO::PARAM_INT);
+$stmt->execute();
+$exams = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +36,17 @@
     <title>Manage Exam with Pagination</title>
     <link rel="stylesheet" type="text/css" href="css/mycss.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .pagination-info {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
 </head>
 <body>
     <div class="app-main__outer">
@@ -26,7 +67,7 @@
                 <div class="main-card mb-3 card">
                     <div class="card-header">Exam List</div>
                     <div class="table-responsive">
-                        <table id="tableList" class="align-middle mb-0 table table-striped table-bordered dataTable" style="width:100%">
+                        <table id="tableList" class="align-middle mb-0 table table-striped table-bordered" style="width:100%">
                             <thead>
                                 <tr>
                                     <th class="text-left pl-4">Exam Title</th>
@@ -38,90 +79,74 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php 
-                                $selExam = $conn->query("SELECT * FROM exam_tbl ORDER BY ex_id DESC ");
-                                if($selExam->rowCount() > 0)
-                                {
-                                    while ($selExamRow = $selExam->fetch(PDO::FETCH_ASSOC)) { ?>
+                                <?php
+                                if(count($exams) > 0) {
+                                    foreach ($exams as $exam) { ?>
                                         <tr>
-                                            <td class="pl-4"><?php echo $selExamRow['ex_title']; ?></td>
+                                            <td class="pl-4"><?php echo htmlspecialchars($exam['ex_title']); ?></td>
                                             <td>
-                                                <?php 
-                                                    $courseId =  $selExamRow['cou_id']; 
-                                                    $selCourse = $conn->query("SELECT * FROM course_tbl WHERE cou_id='$courseId' ");
-                                                    while ($selCourseRow = $selCourse->fetch(PDO::FETCH_ASSOC)) {
-                                                        echo $selCourseRow['cou_name'];
-                                                    }
+                                                <?php
+                                                $courseId = $exam['cou_id'];
+                                                // Fetch strand (course) name
+                                                $selCourse = $conn->prepare("SELECT cou_name FROM course_tbl WHERE cou_id = :cou_id");
+                                                $selCourse->bindParam(':cou_id', $courseId, PDO::PARAM_INT);
+                                                $selCourse->execute();
+                                                $course = $selCourse->fetch(PDO::FETCH_ASSOC);
+                                                echo htmlspecialchars($course['cou_name']);
                                                 ?>
                                             </td>
-                                            <td><?php echo $selExamRow['ex_description']; ?></td>
-                                            <td><?php echo $selExamRow['ex_time_limit']; ?></td>
-                                            <td><?php echo $selExamRow['ex_questlimit_display']; ?></td>
+                                            <td><?php echo htmlspecialchars($exam['ex_description']); ?></td>
+                                            <td><?php echo htmlspecialchars($exam['ex_time_limit']); ?></td>
+                                            <td><?php echo htmlspecialchars($exam['ex_questlimit_display']); ?></td>
                                             <td class="text-center">
-                                                <a href="manage-exam.php?id=<?php echo $selExamRow['ex_id']; ?>" type="button" class="btn btn-primary btn-sm">
+                                                <a href="manage-exam.php?id=<?php echo htmlspecialchars($exam['ex_id']); ?>" type="button" class="btn btn-primary btn-sm">
                                                     <i class="fas fa-cog"></i>
                                                 </a>
-                                                <button type="button" id="deleteExam" data-id='<?php echo $selExamRow['ex_id']; ?>' class="btn btn-danger btn-sm">
+                                                <button type="button" id="deleteExam" data-id="<?php echo htmlspecialchars($exam['ex_id']); ?>" class="btn btn-danger btn-sm">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </td>
                                         </tr>
                                     <?php }
-                                }
-                                else
-                                { ?>
+                                } else { ?>
                                     <tr>
                                         <td colspan="6">
                                             <h3 class="p-3">No Exam Found</h3>
                                         </td>
                                     </tr>
-                                <?php }
-                                ?>
+                                <?php } ?>
                             </tbody>
                         </table>
                     </div>
-                    <!-- Pagination -->
-                    <div class="px-4 py-3 flex items-center justify-between border-t border-gray-200 bg-white">
-                        <div class="flex-1 flex justify-between sm:hidden">
-                            <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm">
-                                Previous
-                            </a>
-                            <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm">
-                                Next
-                            </a>
+
+                    <!-- Pagination and Info Section -->
+                    <div class="pagination-container">
+                        <!-- Page Info Display (Left) -->
+                        <div class="pagination-info">
+                            <strong>Page <?= $page_no; ?> of <?= $total_no_of_pages; ?></strong>
                         </div>
-                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                            <div>
-                                <p class="text-sm text-gray-700">
-                                    Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">50</span> results
-                                </p>
-                            </div>
-                            <div>
-                                <nav class="relative inline-flex items-center space-x-2" aria-label="Pagination">
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        Previous
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        1
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        2
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        3
-                                    </a>
-                                    <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md shadow-sm">
-                                        ...
-                                    </span>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        10
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
-                                        Next
-                                    </a>
-                                </nav>
-                            </div>
-                        </div>
+
+                        <!-- Pagination Links (Right) -->
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-end">
+                                <!-- Previous Page Link -->
+                                <li class="page-item <?= ($page_no <= 1) ? 'disabled' : ''; ?>">
+                                    <a class="page-link" href="<?= ($page_no > 1) ? '?page=manage-exam&page_no=' . $previous_page : '#'; ?>">Previous</a>
+                                </li>
+
+                                <!-- Page Number Links -->
+                                <?php for ($i = 1; $i <= $total_no_of_pages; $i++) { ?>
+                                    <li class="page-item <?= ($i == $page_no) ? 'active' : ''; ?>">
+                                        <a class="page-link" href="?page=manage-exam&page_no=<?= $i; ?>"><?= $i; ?></a>
+                                    </li>
+                                <?php } ?>
+
+                                <!-- Next Page Link -->
+                                <li class="page-item <?= ($page_no >= $total_no_of_pages) ? 'disabled' : ''; ?>">
+                                    <a class="page-link" href="<?= ($page_no < $total_no_of_pages) ? '?page=manage-exam&page_no=' . $next_page : '#'; ?>">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
